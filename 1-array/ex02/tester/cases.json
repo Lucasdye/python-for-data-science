@@ -1,0 +1,32 @@
+{
+  "general": {
+    "script_name": "load_image"
+  },
+
+  "faulty_cases": {
+    "args": [
+      ["missing.jpg"],
+      ["animal.jpg"],
+      ["lanscape.jpeg"],
+      ["fake.txt"],
+      ["fake.jpg"],
+      ["corrupted.jpeg"],
+      ["."],
+      [""],
+      [null],
+      [42]
+    ]
+  },
+
+  "sain_cases": {
+    "args": [
+      ["../images/animal.jpeg"],
+      ["../lanscape.jpg"]
+    ],
+
+    "expected_outputs": [
+      "The shape of image is: (768, 1024, 3)\n[[[129 132 139] [128 131 138] [127 130 137] ... [ 63  82  52] [ 63  82  52] [ 63  82  52]]]",
+      "The shape of image is: (257, 450, 3)\n[[[ 10  13  18] [ 12  15  20] [ 15  18  23] ... [  0   0   0] [  0   0   0] [  0   0   0]]]"
+    ]
+  }
+}
