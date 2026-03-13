@@ -21,11 +21,11 @@ def _validate_load_image_inputs(path: str) -> None:
         ValidationError: Raised when input is invalid
     """
     if not isinstance(path, str):
-        raise ValidationError(f"'path' isn't a string: {path}")
+        raise ValidationError(f"'path' isn't a string '{path}'")
     if not os.path.isfile(path):
-        raise ValidationError(f"File not found: {path}")
+        raise ValidationError(f"File not found '{path}'")
     if cv.imread(path, cv.IMREAD_COLOR) is None:
-        raise ValidationError(f"File unreadable or unsupported: {path}")
+        raise ValidationError(f"File unreadable or unsupported '{path}'")
     return
 
 

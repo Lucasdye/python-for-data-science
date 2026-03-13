@@ -19,14 +19,12 @@ import  sys
 import traceback as tb
 
 
-PISCINE_DIR = os.path.expanduser("~/coding/42/python-for-data-science")
-PROJECT_DIR = os.path.expanduser("~/coding/42/python-for-data-science/1-array")
+PROJECT_DIR = "~/home/lucas/coding/42/python-for-data-science"
 TESTER_DIR = os.path.dirname(os.path.abspath(__file__))
 CASE_PATH = os.path.join(TESTER_DIR, "cases.json")
 OUTPUT_PATH = os.path.join(TESTER_DIR, "output.txt")
-IMAGES_DIR = os.path.join(PROJECT_DIR, "inputs")
+IMAGES_DIR = os.path.join(PROJECT_DIR, "images")
 sys.path.insert(0, PROJECT_DIR)
-from ex02.load_image import ft_load
 
 
 def test_sain_args(data: json, output_file:TextIO):
@@ -43,7 +41,6 @@ def test_sain_args(data: json, output_file:TextIO):
         with ctxlib.redirect_stdout(captured_output):
             try:
                 #func_to_test(arg[0], arg[1], ...)
-                ft_load(f"{IMAGES_DIR}/{arg[0]}")
                 pass
             except Exception as e:
                 caught_exception = e
@@ -95,7 +92,6 @@ def test_faulty_args(data: json, output_file:TextIO):
             with ctxlib.redirect_stderr(sys.stdout):
                 try:
                     #func_to_test(arg[0], arg[1], ...)
-                    ft_load(f"{IMAGES_DIR}/{arg[0]}")
                     pass
                 except Exception as e:
                     caught_exception = e

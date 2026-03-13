@@ -20,8 +20,8 @@
 
   "sain_cases": {
     "args": [
-      ["../images/animal.jpeg"],
-      ["../lanscape.jpg"]
+      ["animal.jpeg"],
+      ["landscape.jpg"]
     ],
 
     "expected_outputs": [
