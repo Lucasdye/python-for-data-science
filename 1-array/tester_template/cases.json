@@ -1,0 +1,23 @@
+{
+    "general":
+    {
+        "script_name": "my_program"
+    },
+
+
+"faulty_cases":{
+    "args": [
+        
+    ]
+},
+
+"sain_cases":
+{
+    "args": [
+        
+    ],
+    "expected_outputs": [
+        
+    ]
+}
+}
