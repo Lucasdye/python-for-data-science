@@ -1,0 +1,8 @@
+11:32:56 INFO: Program 'zoom' started
+"zoom.py, main, 196
+11:32:56 INFO: Loading image /home/lucas/coding/42/python-for-data-science/1-array/inputs/animal.jpeg
+"zoom.py, main, 197
+11:32:56 INFO: Cropping image /home/lucas/coding/42/python-for-data-science/1-array/inputs/animal.jpeg
+"zoom.py, main, 203
+11:33:01 INFO: Program finished with success !
+"zoom.py, main, 215

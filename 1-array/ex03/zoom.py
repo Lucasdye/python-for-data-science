@@ -12,33 +12,32 @@ from load_image import ft_load
 # -------------------- Classes --------------------
 @dataclass(frozen=True)
 class Params:
-    prg_dir: str = os.path.dirname(__file__)
-    prg_name: str = os.path.splitext(os.path.basename(__file__))[0]
+    project_dir: str = os.path.expanduser(
+        "~/coding/42/python-for-data-science/1-array")
+
+    ex_dir: str = os.path.dirname(__file__)
+    script_name: str = os.path.splitext(os.path.basename(__file__))[0]
     img_name: str = "animal.jpeg"
 
     @property
-    def root_dir(self) -> str:
-        return os.path.dirname(self.prg_dir)
-
-    @property
-    def img_dir(self) -> str:
-        return os.path.join(self.root_dir, "images")
+    def inputs_dir(self) -> str:
+        return os.path.join(self.project_dir, "inputs")
 
     @property
     def img_path(self) -> str:
-        return os.path.join(self.img_dir, self.img_name)
+        return os.path.join(self.inputs_dir, self.img_name)
 
     @property
     def log_dir(self) -> str:
-        return os.path.join(self.prg_dir, "logs")
+        return os.path.join(self.ex_dir, "logs")
 
     @property
     def log_name(self) -> str:
-        return f"{self.prg_name}.log"
+        return f"{self.script_name}.log"
 
     @property
     def log_path(self) -> str:
-        return os.path.join(self.prg_dir, self.log_dir, self.log_name)
+        return os.path.join(self.ex_dir, self.log_dir, self.log_name)
 
 
 class ZoomErrors(Exception):
@@ -115,7 +114,9 @@ def _validate_zoom_inputs(
     if not _is_positive(height):
         raise ValidationError("'height' has to be positive")
 
-    if not (im.dtype == "uint8" or im.dtype == "uint32" or im.dtype == "uint64"):
+    if not (im.dtype == "uint8"
+            or im.dtype == "uint32"
+            or im.dtype == "uint64"):
         msg = f"Image's pixel must be type uint8/32/64, not {im.dtype}"
         raise ValidationError(msg)
 
@@ -157,7 +158,7 @@ def _display_image(im: np.ndarray) -> None:
 def _print(im: ndarray) -> None:
     """Outputs shape and tensor after slicing"""
     shape = im.shape
-    print("New shape after slicing: ", shape)
+    print("New shape after slicing:", shape)
     print(im)
     return
 
@@ -192,15 +193,13 @@ def main():
         _setup_logging()
         logger = _get_logger()
 
-        logger.info("Program '%s' started", params.prg_name)
+        logger.info("Program '%s' started", params.script_name)
         logger.info("Loading image %s", params.img_path)
 
         im = ft_load(params.img_path)
         if im is None:
             raise ValidationError("Image couldn't be loaded")
 
-        plt.imshow(im)
-        plt.show()
         logger.info("Cropping image %s", params.img_path)
         im = zoom(im, width=400, height=400, x_offset=100, y_offset=450)
 

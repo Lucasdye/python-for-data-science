@@ -14,38 +14,32 @@ from collections import deque
 # ---------------------- Classes ----------------------
 @dataclass(frozen=True)
 class Params:
-    prg_dir: str = os.path.dirname(__file__)
-    prg_name: str = os.path.splitext(os.path.basename(__file__))[0]
+    project_dir: str = os.path.expanduser(
+        "~/coding/42/python-for-data-science/1-array")
+
+    ex_dir: str = os.path.dirname(__file__)
+    script_name: str = os.path.splitext(os.path.basename(__file__))[0]
     img_name: str = "animal.jpeg"
-    zoom_dirname: str = "ex03"
 
     @property
-    def root_dir(self) -> str:
-        return os.path.dirname(self.prg_dir)
-
-    @property
-    def img_dir(self) -> str:
-        return os.path.join(self.root_dir, "images")
+    def inputs_dir(self) -> str:
+        return os.path.join(self.project_dir, "inputs")
 
     @property
     def img_path(self) -> str:
-        return os.path.join(self.img_dir, self.img_name)
+        return os.path.join(self.inputs_dir, self.img_name)
 
     @property
     def log_dir(self) -> str:
-        return os.path.join(self.prg_dir, "logs")
+        return os.path.join(self.ex_dir, "logs")
 
     @property
     def log_name(self) -> str:
-        return f"{self.prg_name}.log"
+        return f"{self.script_name}.log"
 
     @property
     def log_path(self) -> str:
-        return os.path.join(self.prg_dir, self.log_dir, self.log_name)
-
-    @property
-    def zoom_module(self) -> str:
-        return os.path.join(self.root_dir, self.zoom_dirname)
+        return os.path.join(self.ex_dir, self.log_dir, self.log_name)
 
 
 class RotateError(Exception):
@@ -61,10 +55,10 @@ def _setup_logging() -> None:
     """Creates 'log' dir and configures the logging behavior"""
     params = Params()
     os.makedirs(params.log_dir, exist_ok=True)
-
     fmt = (
-            '%(asctime)s %(levelname)s: %(message)s',
-            '\n%(filename)s, %(funcName)s, %(lineno)s')
+            '%(asctime)s %(levelname)s: %(message)s\n"'
+            '%(filename)s, %(funcName)s, %(lineno)s'
+        )
     logging.basicConfig(
         level=logging.INFO,
         format=fmt,
@@ -209,7 +203,7 @@ def main():
         params = Params()
         _setup_logging()
         logger = _get_logger()
-        logger.info("Program %s started", params.prg_name)
+        logger.info("Program %s started", params.script_name)
 
         im = ft_load(params.img_path)
         if im is None:

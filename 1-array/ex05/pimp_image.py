@@ -60,15 +60,16 @@ def _compute_px_luminance(px: np.array) -> np.float64:
 
 # -------------------- Public methods --------------------
 def ft_grey(im: np.ndarray) -> np.ndarray | None:
-    """Turns the image into grey shades"""
+    """Turns a grey shaded copy of the image"""
     try:
         len_x = im.shape[0]
         len_y = im.shape[1]
 
+        cpy_im = im.copy()
         grey_im = np.ones([len_x, len_y, 1], dtype="uint64")
         for i in range(len_x):
             for j in range(len_y):
-                grey_px = _compute_px_luminance(im[i][j])
+                grey_px = _compute_px_luminance(cpy_im[i][j])
                 grey_im[i][j] = grey_px
         _print(im, "The shape of the image is: ")
         _display_image(grey_im, cmap="grey")
@@ -82,55 +83,59 @@ def ft_invert(im: np.ndarray) -> np.ndarray | None:
     """Inverts the image's colors"""
     try:
         _validate_pimp_image_inputs(im)
-        im = 255 - im
-        _print(im, "The shape of image is: ")
-        _display_image(im)
+        inv_im = im.copy()
+        inv_im = 255 - inv_im
+        _print(inv_im, "The shape of image is: ")
+        _display_image(inv_im)
     except ValidationError as e:
         print("Error: ", e)
         return None
-    return im
+    return inv_im
 
 
 def ft_red(im: np.ndarray) -> np.ndarray | None:
     """Turns the image into red shades"""
     try:
         _validate_pimp_image_inputs(im)
-        im[:, :, 1] = 0
-        im[:, :, 2] = 0
-        _print(im, "The shape of image is: ")
-        _display_image(im)
+        red_im = im.copy()
+        red_im[:, :, 1] = 0
+        red_im[:, :, 2] = 0
+        _print(red_im, "The shape of image is: ")
+        _display_image(red_im)
     except ValidationError as e:
         print("Error: ", e)
         return None
-    return im
+    return red_im
 
 
 def ft_blue(im: np.ndarray) -> np.ndarray | None:
     """Turns the image into blue shades"""
     try:
         _validate_pimp_image_inputs(im)
-        im[:, :, 0] = 0
-        im[:, :, 1] = 0
+        blue_im = im.copy()
+        blue_im[:, :, 0] = 0
+        blue_im[:, :, 1] = 0
         _print(im, "The shape of image is: ")
-        _display_image(im)
+        _display_image(blue_im)
     except ValidationError as e:
         print("Error: ", e)
         return None
-    return im
+    return blue_im
 
 
 def ft_green(im: np.ndarray) -> np.ndarray | None:
     """Turns the image into green shades"""
     try:
         _validate_pimp_image_inputs(im)
-        im[:, :, 0] = 0
-        im[:, :, 2] = 0
-        _print(im, "The shape of image is: ")
-        _display_image(im)
+        green_im = im.copy()
+        green_im[:, :, 0] = 0
+        green_im[:, :, 2] = 0
+        _print(green_im, "The shape of image is: ")
+        _display_image(green_im)
     except ValidationError as e:
         print("Error: ", e)
         return None
-    return im
+    return green_im
 
 
 def main():
