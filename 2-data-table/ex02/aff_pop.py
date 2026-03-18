@@ -10,6 +10,7 @@ import logging
 from logging import Logger
 from typing import Any
 import numpy as np
+import random
 
 
 # -------------------- Classes --------------------
@@ -25,7 +26,7 @@ class Params():
 
     @property
     def data_path(self):
-        return os.path.join(self.inputs_dir, "life_expectancy_years.csv")
+        return os.path.join(self.inputs_dir, "population_total.csv")
 
     @property
     def log_name(self):
@@ -75,26 +76,43 @@ def _get_logger(name: str = None) -> Logger:
         return logging.getLogger(name)
 
 
-def _validate_aff_life_inputs(df: Any, targeted_country: Any) -> None:
+def _validate_aff_life_inputs(df: Any, my_country: Any) -> None:
     if "country" not in df.columns:
         raise ValidationError("There's no 'country' column label in DataFrame")
-    if targeted_country not in df["country"].values:
-        raise ValidationError(f"{targeted_country} hasn't been found in DataFrame")
+    if my_country not in df["country"].values:
+        raise ValidationError(f"{my_country} hasn't been found in DataFrame")
 
+def _parse_population(val: Any) -> float | int:
+    val = str(val)
+    if "M" in val:
+        return float(val.replace("M", ""))
+    elif "k" in val:
+        return float(val.replace("k", "")) / 100
+    else:
+        return float(val)
+
+def _plot_country_pop(df: DataFrame, country: str) -> None:
+    # ----- x axis -----
+    row = df[df["country"] == country]
+    x_years = row.columns[1:250].values.astype(int)
+
+    # ----- y axis -----
+    raw_values = row.values.flatten()[1:250]
+    y_pop = [_parse_population(val) for val in raw_values]
+    y_pop = np.array(y_pop, dtype="float")
+    
+    # ---- plot ------
+    plt.plot(x_years, y_pop, label=country)
 
 # -------------------- Methods --------------------
-def aff_life(df: DataFrame, targeted_country: str) -> None:
-    _validate_aff_life_inputs(df, targeted_country)
-    country_row = df[df["country"] == targeted_country] #DataFrame
-    data = country_row.drop(columns=["country"])
-    data.T.plot()
-    # values = country_row.values.flatten()[1:]
-    # years  = country_row.columns.values[1:].astype(int)
-    # plt.plot(years, values)
-    # plt.xlabel("year")
-    # plt.ylabel("life expectancy")
-    # plt.title(f"{targeted_country} life expectancy projection")
-    # print(years)
+def aff_pop(df: DataFrame, my_country: str) -> None:
+    _validate_aff_life_inputs(df, my_country)
+    _plot_country_pop(df, "France")
+    rdm_country = df["country"].values.flatten()[random.randrange(0, 196, 1)]
+    _plot_country_pop(df, rdm_country)
+  
+    # ---- plot ------
+    plt.legend()
     plt.show()
 
 
@@ -112,7 +130,7 @@ def main():
             if df is None:
                 raise ValidationError(f"{params.data_path} couldn't be loaded")
 
-            aff_life(df, "France")
+            aff_pop(df, "France")
         except ValidationError as e:
             logger.error(e)
             print("Error:", e)
