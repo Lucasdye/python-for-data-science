@@ -1,5 +1,6 @@
 # -------------------- Modules --------------------
 import pandas as pd
+from pandas import DataFrame
 from tabulate import tabulate as tb
 from matplotlib import pyplot as plt
 import os
@@ -7,6 +8,8 @@ from dataclasses import dataclass
 from load_csv import load
 import logging
 from logging import Logger
+from typing import Any
+import numpy as np
 
 
 # -------------------- Classes --------------------
@@ -71,7 +74,31 @@ def _get_logger(name: str = None) -> Logger:
     else:
         return logging.getLogger(name)
 
+
+def _validate_aff_life_inputs(df: Any, targeted_country: Any) -> None:
+    if "country" not in df.columns:
+        raise ValidationError("There's no 'country' column label in DataFrame")
+    if targeted_country not in df["country"].values:
+        raise ValidationError(f"{targeted_country} hasn't been found in DataFrame")
+
+    
+
 # -------------------- Methods --------------------
+def aff_life(df: DataFrame, targeted_country: str) -> None:
+    _validate_aff_life_inputs(df, targeted_country)
+    country_row = df[df["country"] == targeted_country]
+    country_row.plot()
+    plt.show(  
+        
+    )
+    # years = country_row.columns.values[1:]
+    # years = np.array(years, dtype="int")
+    # life_expectancies = country_row.values[0][1:]
+    # plt.plot()
+    # plt.show()
+    # print(life_expectancies)
+    
+    
 # -------------------- Main -----------------------
 def main():
     """Displays the country's life expectancy of the 42 campus"""
@@ -85,8 +112,10 @@ def main():
             df = load(params.data_path)
             if df is None:
                 raise ValidationError(f"{params.data_path} couldn't be loaded")
-            df.plot()
-            plt.show()
+
+            aff_life(df, "France")
+            # df.plot()
+            # plt.show()
             # plt.plot(df)
             # plt.show()
         except ValidationError as e:
