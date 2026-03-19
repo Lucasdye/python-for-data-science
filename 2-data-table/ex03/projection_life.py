@@ -27,7 +27,15 @@ class Params():
         return os.path.join(self.project_dir, "inputs")
 
     @property
-    def data_path(self):
+    def data_income_per_person_path(self):
+        return os.path.join(self.inputs_dir, "income_per_person_gdppercapita_ppp_inflation_adjusted.csv")
+
+    @property
+    def data_life_expectancy_path(self):
+        return os.path.join(self.inputs_dir, "life_expectancy_years.csv")
+
+    @property
+    def data_pop_total_path(self):
         return os.path.join(self.inputs_dir, "population_total.csv")
 
     @property
@@ -78,75 +86,35 @@ def _get_logger(name: str = None) -> Logger:
         return logging.getLogger(name)
 
 
-def _validate_aff_pop_inputs(df: Any, my_country: Any) -> None:
+def _validate_projection_life_inputs(df_gdp_per_capita: Any, df_life_exp: Any) -> None:
     """Validates the inputs of of aff_pop bedore being to sent to it"""
-    if "country" not in df.columns:
-        raise ValidationError("There's no 'country' column label in DataFrame")
-    if my_country not in df["country"].values:
-        raise ValidationError(f"{my_country} hasn't been found in DataFrame")
-
-def _parse_population(val: Any) -> float | int:
-    """Transforms the string values into floats"""
-    val = str(val)
-    if "M" in val:
-        return float(val.replace("M", ""))
-    elif "k" in val:
-        return float(val.replace("k", "")) / 100
-    else:
-        return float(val)
-
-def _extract_country_tot_pop(df: DataFrame, country: str) -> ndarray:
-    """Filters the values from the DataFrame row"""
-    row = df[df["country"] == country]
-    raw_values = row.values.flatten()[1:]
-    pop = [_parse_population(val) for val in raw_values]
-    pop = np.array(pop, dtype="float")
-    return pop
-
-
-def _scaling_y_axis(pop_france: ndarray, pop_rdm_country: ndarray) -> None:
-    """Scales the y axis to the max value for plotting"""
-    if pop_france.max() > pop_rdm_country.max():
-        y_max = pop_france.max()
-    else:
-        y_max = pop_rdm_country.max()
-
-    num_ticks = pd.Series(range(0, int(y_max), int(y_max) // 6))
-    str_ticks = num_ticks.astype(str) + "M"
-    plt.yticks(num_ticks, str_ticks)
-
-
-def _scaling_x_axis() -> None:
-    """Scales the x axis for plotting"""
-    plt.xticks(range(1800, 2050, 40))
-    plt.xlim(1790, 2060)
+    if not (isinstance(df_gdp_per_capita, DataFrame) and isinstance(df_gdp_per_capita, DataFrame)):
+        raise ValidationError(f"Datas has to be DataFrame, not '{type(df_gdp_per_capita)}' '{type(df_life_exp)}'")
+    if "1900" not in df_gdp_per_capita.columns or "1900" not in df_life_exp.columns:
+        raise ValidationError("There's no '1900' column label in DataFrame")
 
 
 # -------------------- Methods --------------------
-def aff_pop(df: DataFrame, my_country: str) -> None:
-    """Displays the evolution of the France's population
-    and of a random country.
+def projection_life(df_gdp_per_capita: DataFrame, df_life_exp: DataFrame) -> None:
+    """Crosses the life expectancy data to the gdp per capita data
+    of the year 1900 in the world. Offers a scatter reprensation and a
+    logarithmic x axis scaling.
 
     Args:
-        df (DataFrame): Countries population evolution
-        my_country (str): my 42 campus country
+        df_gdp_per_capita (DataFrame): gdp per capita per country
+        df_life_exp (DataFrame): life expectancy per country
     """
-    _validate_aff_pop_inputs(df, my_country)
 
-    rdm_country = df["country"].values.flatten()[random.randrange(0, 196, 1)]
+    _validate_projection_life_inputs(df_gdp_per_capita, df_life_exp)
+    life_exp = df_life_exp["1900"].astype(float)
+    gdp_per_capita = df_gdp_per_capita["1900"].astype(float)
 
-    years = df.columns[1:].values.astype(int)
-
-    pop_france = _extract_country_tot_pop(df, "France")
-    pop_rdm_country = _extract_country_tot_pop(df, rdm_country)
-
-    # ----- plotting -----
-    _scaling_y_axis(pop_france, pop_rdm_country)
-    _scaling_x_axis()
-    plt.title("Population Projections")
-    plt.plot(years, pop_france, label="France")
-    plt.plot(years, pop_rdm_country, label=rdm_country)
-    plt.legend()
+    plt.title("1900")
+    plt.scatter(gdp_per_capita, life_exp)
+    plt.xlabel("Gross Domestic Product")
+    plt.ylabel("Life expectancy")
+    plt.xscale("log")
+    plt.xticks([300, 1000, 10000], ["300", "1k", "10k"])
     plt.show()
     return
 
@@ -162,11 +130,12 @@ def main():
             logger = _get_logger()
             logger.info("Program %s has started", params.prg_name)
 
-            df = load(params.data_path)
-            if df is None:
-                raise ValidationError(f"{params.data_path} couldn't be loaded")
+            df_gdp_per_capita = load(params.data_income_per_person_path)
+            df_life_exp = load(params.data_life_expectancy_path)
+            if df_gdp_per_capita is None or df_life_exp is None:
+                raise ValidationError(f"{params.data_income_per_person_path} or {params.df_life_exp} couldn't be loaded")
 
-            aff_pop(df, "France")
+            projection_life(df_gdp_per_capita, df_life_exp)
         except ValidationError as e:
             logger.error(e)
             print("Error:", e)
