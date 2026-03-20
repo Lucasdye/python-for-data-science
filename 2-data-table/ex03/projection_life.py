@@ -57,6 +57,7 @@ class AFFLifeError(Exception):
 class ValidationError(AFFLifeError):
     """Raises any invalid inputs errors"""
 
+
 # -------------------- Helpers --------------------
 def _setup_logging() -> None:
     """Creates 'log' dir and configures the logging behavior"""
